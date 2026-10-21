@@ -102,6 +102,28 @@ This project brings together foundational AWS networking and compute concepts. I
 
 This work is based on AWS re/Start educational lab exercises. It is a learning portfolio, not a representation of a production environment.
 
+## Project Status
+
+**Current stage:** Infrastructure definition and documentation
+
+### Completed
+- [x] Created the public GitHub project repository.
+- [x] Documented the project objectives and AWS components.
+- [x] Added a CloudFormation template for the VPC and EC2 resources.
+- [x] Added an infrastructure validation checklist.
+- [x] Documented the intended architecture and security considerations.
+
+### Not yet verified
+- [ ] CloudFormation template validation in AWS.
+- [ ] Successful stack deployment.
+- [ ] Verification of deployed resources in the AWS Console.
+- [ ] Testing of network connectivity and access controls.
+
+### Learning outcomes
+This project demonstrates foundational AWS concepts involving VPC networking, subnets, route tables, Internet Gateways, security groups, EC2, and infrastructure as code.
+
+*This is an educational portfolio project. Completion of the documentation does not imply successful deployment or production readiness.*
+
 ---
 
 **Author:** Sabeeh Alvi  
