@@ -1,0 +1,101 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  AWS re/Start learning project: VPC, Internet Gateway,
+  private subnet, security group, and EC2 instance.
+
+Parameters:
+  LatestAmazonLinux2Ami:
+    Description: Latest Amazon Linux 2 AMI available through AWS Systems Manager
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+Resources:
+  ProjectVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: Portfolio-VPC
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: Portfolio-IGW
+
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref ProjectVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ProjectVPC
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: Portfolio-Private-Subnet
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ProjectVPC
+      Tags:
+        - Key: Name
+          Value: Portfolio-Private-Route-Table
+
+  PrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
+
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SSH ingress for the learning exercise
+      VpcId: !Ref ProjectVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: Portfolio-EC2-SG
+
+  ProjectEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref LatestAmazonLinux2Ami
+      InstanceType: t3.micro
+      SubnetId: !Ref PrivateSubnet
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      Tags:
+        - Key: Name
+          Value: Portfolio-Private-EC2
+
+Outputs:
+  VPCId:
+    Description: Created VPC ID
+    Value: !Ref ProjectVPC
+
+  PrivateSubnetId:
+    Description: Created private subnet ID
+    Value: !Ref PrivateSubnet
+
+  EC2InstanceId:
+    Description: Created EC2 instance ID
+    Value: !Ref ProjectEC2Instance
